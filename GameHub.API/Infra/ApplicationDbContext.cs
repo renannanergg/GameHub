@@ -1,9 +1,11 @@
-﻿using GameHub.API.Models;
+﻿using GameHub.API.Infra.Modelos;
+using GameHub.API.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace GameHub.API.Infra
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<PessoaComAcesso, PerfilDeAcesso, int>
     {
         public DbSet<Jogo> Jogos { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
@@ -22,6 +24,7 @@ namespace GameHub.API.Infra
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Jogo>().HasKey(j => j.Id);
         }
     }

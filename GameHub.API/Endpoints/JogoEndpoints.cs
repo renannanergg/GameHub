@@ -10,11 +10,16 @@ namespace GameHub.API.Endpoints
     {
         public static void AddJogoEndpoints(this WebApplication app)
         {
-            app.MapGet("/Jogos", ([FromServices] IJogoService jogoService) =>
+            var groupBuilder = app.MapGroup("/Jogos")
+                .RequireAuthorization()
+                .WithTags("Jogos");
+
+            groupBuilder.MapGet("", ([FromServices] IJogoService jogoService) =>
             {
                 return Results.Ok(jogoService.ListarJogos());
             });
-            app.MapGet("/Jogos/{nome}", ([FromServices] IJogoService jogoService, string nome) =>
+
+            groupBuilder.MapGet("{nome}", ([FromServices] IJogoService jogoService, string nome) =>
             {
                 var jogo = jogoService.GetJogo(j => j.Nome.ToUpper().Equals(nome.ToUpper()));
                 if (jogo is null)
@@ -23,7 +28,8 @@ namespace GameHub.API.Endpoints
                 }
                 return Results.Ok(jogo);
             });
-            app.MapPost("/Jogos", ([FromServices] IJogoService jogoService, [FromBody] JogoRequest jogoRequest) =>
+
+            groupBuilder.MapPost("", ([FromServices] IJogoService jogoService, [FromBody] JogoRequest jogoRequest) =>
             {
                 var novoJogo = new Jogo
                 {
@@ -36,7 +42,8 @@ namespace GameHub.API.Endpoints
                 jogoService.Adicionar(novoJogo);
                 return Results.Created();
             });
-            app.MapPut("/Jogos/{id}", ([FromServices] IJogoService jogoService, [FromBody] Jogo jogo) =>
+
+            groupBuilder.MapPut("{id}", ([FromServices] IJogoService jogoService, [FromBody] Jogo jogo) =>
             {
                 var jogoExistente = jogoService.GetJogo(j => j.Id == jogo.Id);
                 if (jogoExistente is null)
@@ -47,7 +54,8 @@ namespace GameHub.API.Endpoints
                 jogoService.Atualizar(jogo);
                 return Results.Ok(jogo);
             });
-            app.MapDelete("/Jogos/{id}", ([FromServices] IJogoService jogoService, int id) =>
+
+            groupBuilder.MapDelete("{id}", ([FromServices] IJogoService jogoService, int id) =>
             {
                 var jogo = jogoService.GetJogo(j => j.Id == id);
                 if (jogo == null)
@@ -58,7 +66,7 @@ namespace GameHub.API.Endpoints
                 return Results.NoContent();
             });
 
-            app.MapGet("/Jogos/Plataforma/{plataforma}", ([FromServices] IJogoService jogoService, string plataforma) =>
+            groupBuilder.MapGet("Plataforma/{plataforma}", ([FromServices] IJogoService jogoService, string plataforma) =>
             {
                 var jogos = jogoService.ListarPor(j => j.Plataforma.ToUpper().Equals(plataforma.ToUpper()));
                 if (jogos is null)
@@ -68,7 +76,7 @@ namespace GameHub.API.Endpoints
                 return Results.Ok(jogos);
             });
 
-            app.MapGet("/Jogos/Genero/{genero}", ([FromServices] IJogoService jogoService, string genero) =>
+            groupBuilder.MapGet("Genero/{genero}", ([FromServices] IJogoService jogoService, string genero) =>
             {
                 var jogos = jogoService.ListarPor(j => j.Gênero.ToUpper().Equals(genero.ToUpper()));
                 if (jogos is null)
@@ -78,7 +86,7 @@ namespace GameHub.API.Endpoints
                 return Results.Ok(jogos);
             });
 
-            app.MapGet("/Jogos/Ano/{ano}", ([FromServices] IJogoService jogoService, int ano) =>
+            groupBuilder.MapGet("Ano/{ano}", ([FromServices] IJogoService jogoService, int ano) =>
             {
                 var jogos = jogoService.ListarPor(j => j.Ano_Lancamento == ano);
                 if (jogos is null)
