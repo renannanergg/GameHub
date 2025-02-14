@@ -6,6 +6,7 @@ O GameHub é uma API RESTful robusta e flexível, construída com ASP.NET Core e
 - Framework: ASP.NET Core 9.0
 - Banco de Dados: SQL Server 
 - ORM: Entity Framework Core
+- Autenticação/Autorização: ASP.NET Core Identity 
 - Documentação: Swagger
 - Padrões de Arquitetura: Camadas (API, Serviço, Repositório)
 
